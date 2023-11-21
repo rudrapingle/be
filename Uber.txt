@@ -1,0 +1,87 @@
+    Data Handling:
+        Uses NumPy and Pandas for data manipulation.
+
+    Data Splitting:
+        Utilizes train_test_split from scikit-learn to split data into training and testing sets.
+
+    Data Scaling:
+        Applies standardization to features using StandardScaler from scikit-learn.
+
+    Machine Learning Models:
+        Implements Linear Regression and Random Forest Regression using scikit-learn.
+
+    Performance Metrics:
+        Imports metrics such as R-squared, Mean Absolute Error, and Mean Squared Error for evaluating model performance.
+
+    Data Visualization:
+        Incorporates Seaborn for statistical data visualization.
+
+    Suppression of Warnings:
+        Ignores warning messages to enhance code readability.
+
+This line of code reads data from a CSV file named 'uber.csv' and stores it in a Pandas DataFrame called 'data'.
+
+data.head() displays the first few rows of the 'data' DataFrame, offering a preview of the dataset's structure and contents.
+
+data.shape returns the number of rows and columns in the 'data' DataFrame.
+
+data.isnull().sum() checks and displays the count of missing values in each column of the 'data' DataFrame.
+data.drop(columns='Unnamed: 0', inplace=True) removes the column named 'Unnamed: 0' from the 'data' DataFrame in-place.
+The inplace=True argument means that the change is made directly to the existing DataFrame without the need to create a new one.
+
+data = data.dropna() removes rows with missing values from the 'data' DataFrame.
+
+The code data.drop_duplicates(inplace=True) removes duplicate rows from the DataFrame 'data' in-place, meaning the changes are applied directly to the existing DataFrame.
+ Duplicate rows are those with identical values across all columns.
+data.head() is then used to display the first few rows of the DataFrame after removing duplicates, providing a glimpse of the cleaned dataset.
+
+data = data[data['fare_amount'] > 0]: This line filters the DataFrame 'data' to include only rows where the 'fare_amount' is greater than 0. This is a common preprocessing step to remove instances with non-positive or invalid fare amounts.
+
+data["pickup_datetime"] = data["pickup_datetime"].apply(lambda x:[x[0:10] for x in x.split(' ')]): This line processes the 'pickup_datetime' column. It appears to extract the date part (first 10 characters) from each datetime string in the column, using a lambda function and the apply method.
+
+data["pickup_datetime"] = data["pickup_datetime"].apply(lambda x:x[0]): This line further processes the 'pickup_datetime' column, extracting the first character of each date string. This operation seems unusual and might be a mistake, as it effectively takes the first character of the first date string in the column.
+
+data["pickup_datetime"] = pd.DatetimeIndex(data["pickup_datetime"]).year: This line converts the 'pickup_datetime' column to a datetime format and extracts the year. It seems to be aimed at getting the year component of the datetime.
+
+
+   -> data.drop(columns=['key', 'pickup_datetime'], inplace=True): This line drops the specified columns ('key' and 'pickup_datetime') from the DataFrame 'data' in-place. These columns are removed from the dataset.
+
+    X = data.drop(['fare_amount'], axis=1): This line creates a new DataFrame 'X' by excluding the 'fare_amount' column from the 'data' DataFrame. 'X' is typically used to represent the feature variables.
+
+    y = data['fare_amount']: This line creates a Series 'y' containing the target variable 'fare_amount'. 'y' typically represents the variable you are trying to predict.
+
+x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=0): This line splits the data into training and testing sets using the train_test_split function from scikit-learn. It assigns the features (X) and target variable (y) for both training and testing sets. The test_size parameter specifies the proportion of the dataset to include in the test split, and random_state ensures reproducibility by fixing the random seed.
+
+
+ 
+-> The data.corr() command calculates the correlation matrix for the numeric columns in the DataFrame 'data'. The correlation matrix shows how each numeric variable in the dataset correlates with every other numeric variable. The values in the matrix range from -1 to 1:
+
+    1: Perfect positive correlation.
+    0: No correlation.
+    -1: Perfect negative correlation.
+
+This information is useful for understanding relationships between different variables in your dataset. Positive correlations suggest that as one variable increases, the other tends to increase as well, while negative correlations suggest that as one variable increases, the other tends to decrease.
+
+->The sns.boxplot(data['fare_amount']) command uses Seaborn to create a boxplot for the 'fare_amount' column in the DataFrame 'data'. A boxplot provides a graphical summary of the distribution of a dataset, showing key statistics such as the median, quartiles, and potential outliers.
+
+
+->The code calculates the first quartile (Q1) and third quartile (Q3) for the 'fare_amount' column in the DataFrame 'data'. Quartiles are statistical measures that divide a dataset into four equal parts.
+
+Here's what the code does:
+
+    Q1 = np.percentile(data['fare_amount'], 25, interpolation='midpoint'): Calculates the first quartile (Q1) of the 'fare_amount' column, representing the 25th percentile of the data.
+
+    Q3 = np.percentile(data['fare_amount'], 75, interpolation='midpoint'): Calculates the third quartile (Q3) of the 'fare_amount' column, representing the 75th percentile of the data.
+
+The interpolation='midpoint' parameter specifies that if the desired quantile lies between two data points, the average of those points is used as the result.
+
+->The code data.drop(data[data['fare_amount'].values >= 12.5].index, inplace=True) removes rows from the DataFrame 'data' where the 'fare_amount' is greater than or equal to 12.5.
+
+->The Root Mean Squared Error (RMSE) is a measure of the average magnitude of errors between predicted and actual values in a regression model.
+->The R-squared (R2) score is a measure of the proportion of the variance in the dependent variable that is predictable from the independent variable(s) in a regression model.
+->Linear regression is a statistical method used to model the relationship between a dependent variable (target) and one or more independent variables (features) by fitting a linear equation to observed data. 
+->Random Forest is that builds multiple decision trees and combines their predictions for improved accuracy and generalization.
+R2 , is a measure that provides information about the goodness of fit of a model. In the context of regression it is a statistical measure of how well the regression line approximates the actual data..
+
+
+

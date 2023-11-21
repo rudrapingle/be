@@ -1,0 +1,94 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract StudentRegistry {
+    // Structure to represent student data
+    struct Student {
+        uint id;
+        string name;
+        uint age;
+        string course;
+    }
+
+    // Array to store multiple student records
+    Student[] public students;
+
+    // Fallback function to receive Ether
+    receive() external payable {
+        // You can customize the fallback function logic here
+        // For example, log the sender and the received Ether
+        emit Received(msg.sender, msg.value);
+    }
+
+    // Event to log received Ether in the fallback function
+    event Received(address indexed from, uint value);
+
+    // Function to add a new student
+    function addStudent(uint _id, string memory _name, uint _age, string memory _course) external {
+        // Creating a new student instance
+        Student memory newStudent = Student(_id, _name, _age, _course);
+        
+        // Adding the student to the array
+        students.push(newStudent);
+    }
+
+    // Function to get the total number of students
+    function getNumberOfStudents() external view returns (uint) {
+        return students.length;
+    }
+
+    // Function to get student details by index
+    function getStudent(uint _index) external view returns (uint, string memory, uint, string memory) {
+        require(_index < students.length, "Index out of bounds");
+
+        Student storage student = students[_index];
+        return (student.id, student.name, student.age, student.course);
+    }
+
+    // Function to get contract balance
+    function getContractBalance() external view returns (uint) {
+        return address(this).balance;
+    }
+}
+
+
+
+
+THEORY:
+A cryptocurrency is a digital currency, which is an alternative form of payment created using encryption algorithms
+
+MetaMask is a software cryptocurrency wallet used to interact with the Ethereum blockchain.
+
+A blockchain wallet is a cryptocurrency wallet that allows users to manage different kinds of cryptocurrencies—for example, Bitcoin or Ethereum. A blockchain wallet helps someone exchange funds easily.
+
+
+
+Your provided Solidity smart contract, named StudentRegistry, is designed to manage student records on the Ethereum blockchain. Let's break down the key components of the contract:
+
+    Structure: Student
+        The contract defines a structure named Student with four fields: id, name, age, and course. This structure represents the data associated with each student.
+
+    Array: students
+        An array of Student structures is declared as Student[] public students;. This array is intended to store multiple student records.
+
+    Fallback Function: receive
+        The contract includes a fallback function, receive() external payable, which is triggered when the contract receives Ether without a specific function call.
+        The fallback function emits an event named Received to log the address of the sender and the amount of Ether received.
+
+    Event: Received
+        An event named Received is defined to log information about Ether received in the fallback function. It includes the sender's address and the amount of Ether.
+
+    Function: addStudent
+        The addStudent function allows for the addition of a new student record.
+        It takes parameters for the student's ID, name, age, and course.
+        A new Student instance is created with the provided parameters, and it is then added to the students array.
+
+    Function: getNumberOfStudents
+        The getNumberOfStudents function returns the total number of student records in the students array.
+
+    Function: getStudent
+        The getStudent function takes an index as a parameter and returns the details of the student at that index.
+        It checks if the provided index is within the bounds of the array and then retrieves and returns the student's ID, name, age, and course.
+
+    Function: getContractBalance
+        The getContractBalance function returns the current balance of the contract in Ether.
