@@ -1,0 +1,140 @@
+import numpy as np
+
+This line imports the NumPy library, which is a fundamental package for scientific computing with Python. It provides support for arrays, matrices, and mathematical functions to operate on them efficiently.
+
+
+from tensorflow.keras.datasets import imdb
+
+This line imports the IMDB dataset from the tensorflow.keras.datasets module. The IMDB dataset contains movie reviews along with their associated sentiment labels (positive or negative).
+
+
+from tensorflow.keras.models import Sequential
+
+This line imports the Sequential class from the tensorflow.keras.models module. Sequential is a linear stack of layers, which is used to build deep learning models layer by layer.
+
+
+
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+
+This line imports the pad_sequences function from the tensorflow.keras.preprocessing.sequence module. pad_sequences is used to pad or truncate sequences to ensure that they all have the same length, which is necessary for feeding data into a neural network.
+
+
+
+from tensorflow.keras.layers import Dense, Embedding, Flatten, Dropout
+
+This line imports several layer classes from the tensorflow.keras.layers module. These layers are building blocks used to construct neural network architectures:
+
+    Dense: A fully connected layer.
+    Embedding: A layer that turns positive integers (indexes) into dense vectors of fixed size.
+    Flatten: A layer that flattens the input, typically used to flatten convolutional layers before passing them to fully connected layers.
+    Dropout: A regularization technique that randomly sets a fraction of input units to zero during training to prevent overfitting.
+
+
+
+import matplotlib.pyplot as plt
+
+This line imports the pyplot submodule from the Matplotlib library. Matplotlib is a plotting library for Python, and pyplot provides a MATLAB-like plotting interface. It will be used for visualizing the training process and performance metrics of the model.
+
+
+This modified code will now use max_features = 10000 and maxlen = 200 for processing the IMDB dataset. These changes will affect the vocabulary size and the length of each review considered by the mode
+
+
+
+(X_train, y_train), (X_test, y_test) = imdb.load_data(num_words=max_features)
+
+This line loads the IMDB dataset using the imdb.load_data() function. The dataset is split into training and testing sets, with X_train and X_test containing sequences of word indices representing movie reviews, and y_train and y_test containing corresponding sentiment labels (0 for negative, 1 for positive). The num_words parameter is set to max_features, which specifies the maximum number of words to consider in the vocabulary.
+
+python
+
+X_train = pad_sequences(X_train, maxlen=maxlen)
+X_test = pad_sequences(X_test, maxlen=maxlen)
+
+These lines use the pad_sequences() function to pad or truncate the sequences in both X_train and X_test to have a maximum length of maxlen words. This ensures that all sequences have the same length, which is required for feeding the data into a neural network. Sequences longer than maxlen are truncated, and sequences shorter than maxlen are padded with zeros at the beginning. This preprocessing step prepares the data for training the neural network model.
+
+
+
+
+This code defines a Sequential model using the Keras functional API, which allows you to define the model's architecture as a list of layers. Let's break it down:
+
+python
+
+model = Sequential([
+    Embedding(max_features, 128, input_length=maxlen),
+    Flatten(),
+    Dense(64, activation='relu'),
+    Dropout(0.5),
+    Dense(1, activation='sigmoid')
+])
+
+    Embedding(max_features, 128, input_length=maxlen): This line adds an Embedding layer to the model. It turns positive integers (indexes) into dense vectors of fixed size. max_features specifies the size of the vocabulary, 128 specifies the dimension of the embedding, and input_length specifies the length of the input sequences.
+
+    Flatten(): This line adds a Flatten layer to the model. It flattens the input, which is necessary since the previous layer (Embedding) produces a 2D output. It converts the 2D output into a 1D array.
+
+    Dense(64, activation='relu'): This line adds a fully connected Dense layer to the model with 64 units and ReLU activation function.
+
+    Dropout(0.5): This line adds a Dropout layer to the model. Dropout is a regularization technique that randomly sets a fraction of input units to 0 at each update during training, which helps prevent overfitting. Here, 50% of the input units are randomly dropped out.
+
+    Dense(1, activation='sigmoid'): This line adds the output layer to the model. It has a single unit with a sigmoid activation function, which outputs a probability between 0 and 1, indicating the likelihood of the input belonging to the positive class.
+
+
+
+calling model.summary() will provide a concise summary of the architecture and parameters of the neural network model.
+
+
+
+
+This line of code trains the compiled model using the provided training data (X_train and y_train). Let's break it down:
+
+python
+
+history = model.fit(X_train, y_train, epochs=10, batch_size=64, validation_split=0.2)
+
+    X_train and y_train: These are the input features and target labels used for training the model. X_train contains the sequences of word indices representing movie reviews, and y_train contains the corresponding sentiment labels (0 for negative, 1 for positive).
+
+    epochs=10: This specifies the number of epochs (iterations over the entire training dataset) for which the model will be trained. In this case, the model will be trained for 10 epochs.
+
+    batch_size=64: This specifies the number of samples per gradient update. In each iteration (epoch), the training data will be divided into batches of size 64, and the model's weights will be updated based on the gradients computed from these batches.
+
+    validation_split=0.2: This specifies the fraction of the training data to use for validation. In this case, 20% of the training data will be used as validation data during training, while the remaining 80% will be used for actual training. The validation data is used to monitor the model's performance on data that it hasn't been trained on and helps prevent overfitting.
+
+After training, the fit() method returns a history object, which contains information about the training process, such as the loss and accuracy on both the training and validation datasets at each epoch. 
+
+
+
+
+    plt.plot(history.history['loss'], label='Training Loss'): This line plots the training loss over epochs. It accesses the training loss values stored in the history object returned by the fit() method using the key 'loss'.
+
+    plt.plot(history.history['val_loss'], label='Validation Loss'): This line plots the validation loss over epochs. It accesses the validation loss values stored in the history object using the key 'val_loss'.
+    plt.xlabel('Epoch'): This line sets the label for the x-axis to 'Epoch'.
+
+    plt.ylabel('Loss'): This line sets the label for the y-axis to 'Loss'.
+
+    plt.legend(): This line displays a legend on the plot, which identifies the lines corresponding to the training loss and validation loss.
+
+    plt.show(): This line displays the plot.
+
+
+Overall, this code snippet evaluates the model's performance on the training data and prints the obtained loss and accuracy values. It allows you to assess how well the model is performing on the data it was trained on.
+
+
+Overall, this code snippet evaluates the model's performance on the test data and prints the obtained loss and accuracy values. It allows you to assess how well the model generalizes to unseen data.
+
+This code generates predictions for the test data X_test using the trained model
+
+
+
+This code assigns the predicted sentiment and actual sentiment labels for the first sample in the test data based on the model's predictions and the ground truth labels. Let's break it down:
+
+python
+
+predicted_sentiment = "Positive" if predictions[0][0] > 0.5 else "Negative"
+
+    This line checks if the predicted probability for the first sample (predictions[0][0]) is greater than 0.5. If it is, the predicted sentiment is assigned as "Positive"; otherwise, it is assigned as "Negative". This decision is based on the assumption that the model outputs a probability greater than 0.5 for samples it predicts as positive.
+
+python
+
+actual_sentiment = "Positive" if y_test[0] == 1 else "Negative"
+
+    This line checks if the actual label for the first sample (y_test[0]) is equal to 1. If it is, the actual sentiment is assigned as "Positive"; otherwise, it is assigned as "Negative". This decision is based on the assumption that the label 1 represents positive sentiment in the ground truth data.
+
+This code prints out the predicted sentiment and the actual sentiment labels for the first sample in the test data

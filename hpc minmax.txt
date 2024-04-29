@@ -1,0 +1,83 @@
+#include <iostream>
+#include <vector>
+#include <omp.h>
+using namespace std;
+
+int parallelMin(vector<int> arr)
+{
+    int min_val = arr[0];
+    #pragma omp parallel for reduction(min:min_val)
+    for(int i=1; i<arr.size(); i++)
+    {
+        if(arr[i] < min_val)
+            min_val = arr[i];
+    }
+    return min_val;
+}
+
+int parallelMax(vector<int> arr)
+{
+    int max_val = arr[0];
+    #pragma omp parallel for reduction(max:max_val)
+    for(int i=1; i<arr.size(); i++)
+    {
+        if(arr[i] > max_val)
+            max_val = arr[i];
+    }
+    return max_val;
+}
+int parallelSum(vector<int> arr)
+{
+    int sum = 0;
+    #pragma omp parallel for reduction(+:sum)
+    for(int i=0; i<arr.size(); i++)
+        sum += arr[i];
+    return sum;
+}
+
+double parallelAvg(vector<int> arr)
+{
+    return (double)parallelSum(arr)/arr.size();
+}
+
+int main(){
+    int n;
+    cout<<"No of elements: ";
+    cin>>n;
+
+    vector<int> arr(n);
+    cout<<"Enter elements: ";
+    for(int i=0; i<n; i++)
+        cin>>arr[i];
+
+    cout<<"Minimum: "<<parallelMin(arr)<<endl;
+    cout<<"Maximum: "<<parallelMax(arr)<<endl;
+    cout<<"Sum: "<<parallelSum(arr)<<endl;
+    cout<<"Average: "<<parallelAvg(arr)<<endl;
+}
+
+
+To compile file use command-
+g++ -o filename –fopenmp filename.cpp
+ Run file using command-
+./filename
+
+EXPLAIN:
+
+Parallel reduction is a common technique used in parallel programming to compute an aggregate value (such as sum, minimum, maximum, or average) across a large dataset in parallel. Instead of processing the dataset sequentially, parallel reduction divides the dataset into smaller chunks that can be processed concurrently by multiple processing units, such as CPU cores or GPU threads. The results from each chunk are then combined (reduced) to produce the final result. 
+    Header includes: This section includes necessary header files.
+        <iostream>: For input-output operations.
+        <vector>: For using vectors to store elements.
+        <omp.h>: This is for OpenMP directives, which allow for parallel processing.
+
+
+This code seems to implement parallel versions of functions to find the minimum, maximum, sum, and average of elements in a vector using OpenMP directives for parallelization. Here's a brief breakdown of each function:
+
+    parallelMin: Finds the minimum value in the vector using OpenMP parallelization and a reduction clause with min operator.
+    parallelMax: Finds the maximum value in the vector using OpenMP parallelization and a reduction clause with max operator.
+    parallelSum: Computes the sum of all elements in the vector using OpenMP parallelization and a reduction clause with + operator.
+    parallelAvg: Computes the average of all elements in the vector by dividing the parallel sum by the vector size.
+
+In the main function, the user is prompted to enter the number of elements and the elements themselves, and then the program prints the minimum, maximum, sum, and average of the entered elements using the parallel functions.
+
+This code is designed to take advantage of parallel processing using OpenMP, which can significantly improve performance for large datasets on systems with multiple cores or processors.

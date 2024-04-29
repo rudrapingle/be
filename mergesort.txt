@@ -1,0 +1,162 @@
+#include<iostream>
+#include<vector>
+#include<omp.h>
+#include<algorithm>
+using namespace std;
+
+void merge(vector<int> &arr, int left, int mid, int right)
+{
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+
+    vector<int> L(n1), R(n2);
+
+    for(int i=0; i<n1; i++)
+        L[i] = arr[left+i];
+
+    for(int i=0; i<n2; i++)
+        R[i] = arr[mid+i+1];
+
+    int i=0, j=0, k=left;
+
+    while(i<n1 && j<n2)
+    {
+        if(L[i] < R[j])
+            arr[k++] = L[i++];
+        else 
+            arr[k++] = R[j++];
+    }
+
+    while(i<n1)
+        arr[k++] = L[i++];
+
+    while(j<n2)
+        arr[k++] = R[j++];
+}
+
+void sequential_merge_sort(vector<int> &arr, int left, int right)
+{
+    if(left < right)
+    {
+        int mid = left + (right - left)/2;
+        sequential_merge_sort(arr, left, mid);
+        sequential_merge_sort(arr, mid+1, right);
+        merge(arr, left, mid, right);
+    }
+}
+
+void parallel_merge_sort(vector<int> &arr, int left, int right)
+{
+    if(left < right)
+    {
+        int mid = left + (right - left)/2;
+        #pragma omp parallel sections
+        {
+            #pragma omp section
+            {  parallel_merge_sort(arr, left, mid); }
+            #pragma omp section
+            { parallel_merge_sort(arr, mid+1, right); }
+        }
+        merge(arr, left, mid, right);
+    }
+}
+
+int main(){
+    int n;
+    cout<<"No. of elements: ";
+    cin>>n;
+
+    vector<int> data(n);
+    cout<<"Enter elements: ";
+    for(int i=0; i<n; i++)
+        cin>>data[i];
+
+    vector<int> datacopy1(data);
+    vector<int> datacopy2(data);
+
+    cout<<"Sequential Merge Sort: ";
+    double start = omp_get_wtime();
+    sequential_merge_sort(datacopy1, 0, n-1);
+    double end = omp_get_wtime();
+    for(int num : datacopy1)
+        cout<<num<<" ";
+    cout<<endl<<"Time taken: "<<end - start<<" seconds.";
+
+    cout<<endl<<"Parallel Merge Sort: ";
+    start = omp_get_wtime();
+    parallel_merge_sort(datacopy2, 0, n-1);
+    end = omp_get_wtime();
+    for(int num : datacopy2)
+        cout<<num<<" ";
+    cout<<endl<<"Time taken: "<<end - start<<" seconds.";
+}
+
+
+To compile file use command-
+g++ -o filename –fopenmp filename.cpp
+ Run file using command-
+./filename
+
+
+Parallel merge sort is a parallelized version of the merge sort algorithm that takes advantage of
+multiple processors or cores to improve its performance. In parallel merge sort, the input array is
+divided into smaller subarrays, which are sorted in parallel using multiple processors or cores.
+The sorted subarrays are then merged together in parallel to produce the final sorted output.
+
+
+    Header Includes: The program includes necessary header files:
+        iostream: For input/output operations.
+        vector: For using the vector container to store elements.
+        omp.h: For using OpenMP directives and functions.
+        algorithm: For using standard algorithms like sorting.
+
+    Merge Function: The merge function takes a vector arr and three indices left, mid, and right, representing two sorted subarrays within arr. It merges these subarrays into a single sorted array.
+
+    Sequential Merge Sort Function: The sequential_merge_sort function implements the merge sort algorithm recursively in a sequential manner. It divides the array into halves, sorts each half recursively, and then merges the sorted halves using the merge function.
+
+    Parallel Merge Sort Function: The parallel_merge_sort function parallelizes the merge sort algorithm using OpenMP parallel sections. It divides the array into halves and sorts each half recursively in parallel using OpenMP sections. After both halves are sorted, it merges them using the merge function.
+
+    Main Function:
+        It prompts the user to input the number of elements and the elements themselves.
+        It creates two copies of the input array for sequential and parallel sorting.
+        It measures the time taken for sequential merge sort using omp_get_wtime() before and after sorting.
+        It measures the time taken for parallel merge sort using the same method.
+        It prints the sorted array and the time taken for both sequential and parallel merge sort.
+
+    Execution:
+        The user provides input for the number of elements and the elements themselves.
+        The program sorts the elements both sequentially and in parallel using merge sort.
+        It measures and displays the time taken for both methods along with the sorted arrays.
+
+Overall, the program demonstrates how to implement merge sort sequentially and in parallel using OpenMP, providing a comparison of their performance. It's a practical example of parallelizing a sorting algorithm to leverage multiple processor cores for faster execution.
+
+
+
+Merge Sort:
+
+    Merge sort is a sorting algorithm based on the divide-and-conquer strategy.
+    It recursively divides the input array into two halves, sorts each half separately, and then merges the sorted halves.
+    The merge operation combines two sorted arrays into one sorted array.
+
+Sequential Merge Sort:
+
+    Sequential merge sort is the traditional implementation of merge sort that executes on a single thread.
+    It recursively divides the array into halves and sorts each half sequentially.
+    It's straightforward but might not utilize the full potential of multi-core processors.
+
+Parallel Merge Sort:
+
+    Parallel merge sort is an optimized version of merge sort that leverages multiple threads to speed up the sorting process.
+    It divides the array into halves and sorts each half concurrently using multiple threads.
+    It can achieve better performance on multi-core processors by distributing the workload among threads.
+
+OpenMP:
+
+    OpenMP (Open Multi-Processing) is an API (Application Programming Interface) that supports multi-platform shared-memory multiprocessing programming in C, C++, and Fortran.w
+
+
+Approach:
+
+    Merge Sort: Divides the array into smaller sub-arrays, sorts them recursively, and then merges them.
+    Bubble Sort: Compares adjacent elements and swaps them if they are in the wrong order, iterating through the array until it's sorted.
+

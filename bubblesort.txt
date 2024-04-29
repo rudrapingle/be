@@ -1,0 +1,116 @@
+#include<iostream>
+#include<algorithm>
+#include<vector>
+#include<omp.h>
+using namespace std;
+
+void sequential_bubble_sort(vector<int> &arr)
+{
+    int n = arr.size() - 1;
+    for(int i=0; i<n; i++)
+    {
+        for(int j=0; j<n-i; j++)
+        {
+            if(arr[j] > arr[j+1])
+                swap(arr[j], arr[j+1]);
+        }
+    }
+}
+
+void parallel_bubble_sort(vector<int> &arr)
+{
+    int n = arr.size() - 1;
+    bool swapped;
+    do{
+        swapped = false;
+        #pragma omp parallel shared(swapped)
+        for(int i=0; i<n; i++)
+        {
+            if(arr[i] > arr[i+1])
+            {
+                swap(arr[i], arr[i+1]);
+                swapped = true;
+            }
+        }
+    }while(swapped);
+}
+
+int main(){
+    int n;
+    cout<<"No. of elements: ";
+    cin>>n;
+
+    vector<int> data(n);
+    cout<<"Enter elements: ";
+    for(int i=0; i<n; i++)
+        cin>>data[i];
+
+    vector<int> datacopy1(data);
+    vector<int> datacopy2(data);
+
+    cout<<"Sequential Bubble Sort: ";
+    double start = omp_get_wtime();
+    sequential_bubble_sort(datacopy1);
+    double end = omp_get_wtime();
+    for(int num : datacopy1)
+        cout<<num<<" ";
+    cout<<endl<<"Time taken: "<<end - start<<" seconds.";
+
+    cout<<endl<<"Parallel Bubble Sort: ";
+    start = omp_get_wtime();
+    parallel_bubble_sort(datacopy2);
+    end = omp_get_wtime();
+    for(int num : datacopy2)
+        cout<<num<<" ";
+    cout<<endl<<"Time taken: "<<end - start<<" seconds.";
+}
+
+
+To compile file use command-
+g++ -o filename –fopenmp filename.cpp
+ Run file using command-
+./filename 
+
+
+    iostream: Input and output stream handling.
+    algorithm: Required for the swap function.
+    vector: Provides the vector container for storing elements.
+    omp.h: Header for OpenMP library functions.
+
+
+Certainly! This code implements both sequential and parallel versions of the bubble sort algorithm using OpenMP in C++. Here's a breakdown:
+
+    Header Includes:
+        iostream, algorithm, and vector are standard C++ headers.
+        omp.h is included for OpenMP functionalities.
+
+    Function Definitions:
+        sequential_bubble_sort: Sorts the given vector of integers sequentially using the bubble sort algorithm.
+        parallel_bubble_sort: Sorts the given vector of integers in parallel using OpenMP and the bubble sort algorithm.
+
+    Main Function:
+        Prompts the user to input the number of elements (n) and the array elements.
+        Copies the input array for sorting using both sequential and parallel algorithms.
+        Measures the time taken by each sorting algorithm and displays the sorted array along with the execution time.
+
+    Sequential Bubble Sort Function:
+        Uses nested loops to iterate through the array elements.
+        Compares adjacent elements and swaps them if necessary.
+        Continues this process until the array is sorted.
+
+    Parallel Bubble Sort Function:
+        Uses a do-while loop to repeatedly execute the bubble sort until no swaps occur.
+        Utilizes OpenMP to parallelize the sorting process.
+        Each thread compares adjacent elements and performs swaps if necessary.
+        The loop continues until no swaps are made, indicating that the array is sorted.
+
+    Output:
+        Displays the sorted array and the time taken for both sequential and parallel sorting.
+
+
+Approach:
+
+    Merge Sort: Divides the array into smaller sub-arrays, sorts them recursively, and then merges them.
+    Bubble Sort: Compares adjacent elements and swaps them if they are in the wrong order, iterating through the array until it's sorted.
+
+while serial bubble sort operates sequentially with a single thread, parallel bubble sort utilizes multiple threads to perform sorting operations concurrently, potentially improving scalability and reducing sorting time for larger datasets

@@ -1,0 +1,104 @@
+#include<iostream>
+#include<vector>
+#include<omp.h>
+using namespace std;
+
+void dfs(vector<vector<int>> graph, int vertex, vector<bool> &visited)
+{
+    visited[vertex] = true;
+    cout<<vertex<<" ";
+    #pragma omp parallel for
+    for(int i=0; i<graph[vertex].size(); i++)
+    {
+        int neighbor = graph[vertex][i];
+        if(!visited[neighbor])
+            dfs(graph, neighbor, visited);
+    }
+}
+
+int main(){
+    int n_vertices;
+    cout<<"No. of vertices: ";
+    cin>>n_vertices;
+
+    int n_edges;
+    cout<<"No. of edges: ";
+    cin>>n_edges;
+
+    vector<vector<int>> graph(n_vertices);
+    cout<<"Enter edges (src-dest): ";
+    for(int i=0; i<n_edges; i++)
+    {
+        int src, dest;
+        cin>>src>>dest;
+        graph[src].push_back(dest);
+        graph[dest].push_back(src);
+    }
+
+    int src;
+    cout<<"Enter source vertex: ";
+    cin>>src;
+
+    vector<bool> visited(n_vertices, false);
+
+    cout<<"DFS Traversal: ";
+    double start = omp_get_wtime();
+    dfs(graph, src, visited);
+    double end = omp_get_wtime();
+    cout<<endl<<"Time taken: "<<end - start<<" seconds.";
+}
+
+
+To compile file use command-
+g++ -o filename –fopenmp filename.cpp
+ Run file using command-
+./filename
+
+
+ 
+
+In summary, "threads" in OpenMP refer to the units of execution within a parallelized program that run concurrently to perform computations in parallel.
+
+    DFS explores as far as possible along each branch before backtracking.
+    It starts at a specified node (often called the "source" or "root" node) and explores as far as possible along each branch before backtracking.
+    DFS is commonly implemented using recursion or a stack data structure to keep track of the nodes to be visited.
+    It is used to find connected components in graphs, detect cycles in graphs, and solve puzzles like finding solutions to mazes.  
+
+
+Your code appears to implement a parallel depth-first search (DFS) algorithm using OpenMP. Let's break it down:
+
+    Header Includes: You include necessary header files for input-output operations (iostream), working with dynamic arrays (vector), and utilizing OpenMP (omp.h).
+
+    Namespace Declaration: You use the std namespace for convenience, allowing you to use standard C++ library functions without specifying the namespace each time.
+
+    DFS Function Definition:
+        The dfs function performs a depth-first search traversal of the graph. It takes the graph, current vertex, and a vector to keep track of visited vertices.
+        Inside the function, you mark the current vertex as visited and print it.
+        Then, you parallelize the loop that iterates over the neighbors of the current vertex using OpenMP.
+        Each thread recursively calls the dfs function for unvisited neighbors.
+
+    Main Function:
+        In the main function, you take input for the number of vertices and edges, and the edges of the graph.
+        You also take input for the source vertex for the DFS traversal.
+        After initializing the visited vector, you call the dfs function to perform the traversal.
+        You measure the time taken for the traversal using OpenMP's timing functions (omp_get_wtime()).
+
+Overall, your code utilizes OpenMP to parallelize the DFS traversal, potentially improving performance by utilizing multiple CPU cores. However, similar to the BFS implementation, there's a parameter passing issue in the dfs function, and there might be potential race conditions when modifying the visited vector in parallel. These issues should be addressed for correctness and efficiency.
+
+
+A race condition occurs in parallel programming when multiple threads access shared data concurrently, leading to unpredictable behavior. To avoid race conditions in OpenMP DFS:
+
+    Use data privatization to ensure each thread operates on its own data.
+    Employ synchronization constructs like critical sections or atomic operations.
+    Utilize thread-safe data structures or reduction clauses in parallel loops for safe data access.
+
+
+OUTPUT:
+no of vertices:5
+no of edges:5 
+enter edges:0 1
+0 2
+1 3
+1 4
+2 4
+source vertex:0
