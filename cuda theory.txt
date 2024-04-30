@@ -1,0 +1,66 @@
+vector add:
+
+This code appears to be a CUDA program for vector addition, where it adds corresponding elements of two arrays h_a and h_b and stores the result in array h_c. Here's a breakdown of what the code does:
+
+    It defines the number of elements in the arrays using #define N 5.
+    It defines the kernel function gpuAdd which is responsible for performing the vector addition operation.
+    In the main function:
+        Host arrays h_a, h_b, and h_c are defined.
+        Device pointers d_a, d_b, and d_c are declared.
+        Memory is allocated for these device pointers using cudaMalloc.
+        Arrays h_a and h_b are initialized with some values.
+        The input arrays h_a and h_b are copied from host to device memory using cudaMemcpy.
+        The kernel function gpuAdd is launched with N blocks and 1 thread per block.
+        The result array h_c is copied from device to host memory.
+        The result is printed on the console.
+
+However, there is a small issue in the kernel invocation. The block index tid should be the thread index within the block (threadIdx.x)
+
+
+matrix mul:
+
+    It defines a kernel function gpuMM for matrix multiplication on the GPU.
+
+    In the main function:
+        User is prompted to enter a value for the size of the matrix.
+        Matrices hA and hB are initialized with values of 4 and 6 respectively.
+        Memory is allocated on both the host and device for the matrices.
+        Matrices hA and hB are copied from the host to the device.
+        The kernel function gpuMM is launched with a grid and block configuration suitable for the size of the matrices.
+        The result matrix hC is copied from the device to the host.
+        The resultant matrix is printed.
+
+    The program performs matrix multiplication on the GPU using CUDA, leveraging parallelism to accelerate computation.
+
+Certainly! This CUDA code is designed to perform matrix multiplication on the GPU. Let's break down the code step by step:
+
+    Header Includes: The code includes necessary header files like <iostream> and <cuda.h>.
+
+    Macro Definition: The code defines a macro BLOCK_SIZE which determines the size of each thread block in the GPU computation.
+
+    Kernel Function:
+        gpuMM kernel function is defined to perform matrix multiplication on the GPU.
+        Each thread computes a single element of the output matrix C.
+        It utilizes thread and block indices to determine the output matrix element that each thread is responsible for computing.
+
+    Main Function:
+        User input for the matrix size (here, it's restricted to a matrix size where N = K * BLOCK_SIZE).
+        Memory allocation for host matrices hA, hB, and hC.
+        Initialization of matrices hA and hB with specific values (4 and 6 respectively).
+        Memory allocation for device matrices dA, dB, and dC.
+        Copying data from host to device.
+        Configuration of grid and block dimensions for launching the kernel function.
+        Printing input matrices hA and hB.
+        Launching the kernel function gpuMM to perform matrix multiplication on the GPU.
+        Copying the result matrix dC from device to host.
+        Printing the result matrix hC.
+        Freeing memory allocated on both host and device.
+
+    Kernel Invocation:
+        The kernel is invoked with a grid of dimensions K x K and a thread block of dimensions BLOCK_SIZE x BLOCK_SIZE.
+        Each thread block handles a submatrix of the input matrices, and each thread computes a single element of the output matrix.
+
+    Matrix Multiplication:
+        The matrix multiplication is performed using CUDA parallelism, where each thread computes a single element of the output matrix, allowing for efficient parallel execution on the GPU.
+
+In summary, this code demonstrates how to leverage CUDA to perform matrix multiplication on the GPU, utilizing parallelism to accelerate computation.
